@@ -4,14 +4,8 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["*.ngrok-free.app"],
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "api.pixinia.web.id",
-      },
-      {
-        protocol: "https",
-        hostname: "via.placeholder.com",
-      },
+      { protocol: "https", hostname: "**" },
+      { protocol: "http", hostname: "**" },
     ],
   },
 };
