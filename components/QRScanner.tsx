@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
+console.log("[QRScanner] module evaluated");
+
 type ScanState = "ready" | "starting" | "scanning" | "error";
 
 export default function QRScanner() {
@@ -14,8 +16,14 @@ export default function QRScanner() {
 
   const [state, setState] = useState<ScanState>("ready");
   const [errorMsg, setErrorMsg] = useState("");
+  const [debug, setDebug] = useState<string[]>([]);
+
+  function log(msg: string) {
+    setDebug((prev) => [...prev, `${new Date().toLocaleTimeString()} ${msg}`].slice(-8));
+  }
 
   useEffect(() => {
+    setDebug((prev) => [...prev, `${new Date().toLocaleTimeString()} hydrated ua=${navigator.userAgent.slice(0, 40)}`].slice(-8));
     return () => {
       cancelAnimationFrame(rafRef.current);
       streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -23,23 +31,30 @@ export default function QRScanner() {
   }, []);
 
   async function startCamera() {
+    log("startCamera entered");
     setState("starting");
 
     if (!navigator.mediaDevices?.getUserMedia) {
+      log("mediaDevices unavailable");
       setState("error");
       setErrorMsg("Camera API not supported on this browser/connection. Must be HTTPS.");
       return;
     }
 
+    log(`secure=${window.isSecureContext} proto=${location.protocol}`);
+
     let stream: MediaStream;
     try {
+      log("calling getUserMedia");
       stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment" },
         audio: false,
       });
+      log("got stream");
     } catch (err) {
       const name = (err as Error).name;
       const message = (err as Error).message;
+      log(`gUM error: ${name}: ${message}`);
       setState("error");
       setErrorMsg(`${name}: ${message}`);
       return;
@@ -48,9 +63,15 @@ export default function QRScanner() {
     streamRef.current = stream;
     const video = videoRef.current!;
     video.srcObject = stream;
-    await video.play();
+    try {
+      await video.play();
+      log("video.play resolved");
+    } catch (err) {
+      log(`video.play error: ${(err as Error).message}`);
+    }
 
     setState("scanning");
+    log("entering scanning state");
 
     const { default: jsQR } = await import("jsqr");
     const canvas = canvasRef.current!;
@@ -154,6 +175,15 @@ export default function QRScanner() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Debug panel — always visible to confirm JS hydration */}
+      <div className="max-w-sm mx-auto bg-black text-green-400 font-mono text-[10px] leading-tight rounded-lg p-3 space-y-0.5 max-h-40 overflow-auto">
+        <div className="text-yellow-400">debug (state: {state})</div>
+        {debug.length === 0 && <div className="text-red-400">no logs — JS not hydrated?</div>}
+        {debug.map((line, i) => (
+          <div key={i}>{line}</div>
+        ))}
       </div>
 
       {/* Manual fallback */}
