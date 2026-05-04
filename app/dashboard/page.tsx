@@ -89,12 +89,20 @@ export default async function DashboardPage() {
                     : "—"}
                 </td>
                 <td className="px-5 py-4">
-                  <Link
-                    href={`/products/${product.slug}`}
-                    className="text-xs text-gray-600 hover:text-gray-900 underline"
-                  >
-                    View
-                  </Link>
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href={`/products/${product.slug}`}
+                      className="text-xs text-gray-500 hover:text-gray-900 underline"
+                    >
+                      View
+                    </Link>
+                    <Link
+                      href={`/dashboard/products/${product.id}/edit`}
+                      className="text-xs text-gray-900 font-medium hover:underline"
+                    >
+                      Edit
+                    </Link>
+                  </div>
                 </td>
               </tr>
             ))}

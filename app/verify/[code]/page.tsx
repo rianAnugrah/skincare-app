@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { fetchAPI, Barcode, Product } from "@/lib/api";
+import { fetchAPI, eq, Barcode, Product } from "@/lib/api";
 import StatusBadge from "@/components/StatusBadge";
 
 interface Props {
@@ -14,11 +14,11 @@ export default async function VerifyPage({ params }: Props) {
   let error = false;
 
   try {
-    const barcodes: Barcode[] = await fetchAPI(`/barcodes?code=eq.${encodeURIComponent(code)}`);
+    const barcodes: Barcode[] = await fetchAPI(`/barcodes${eq({ code })}`);
     barcode = barcodes?.[0] ?? null;
 
     if (barcode?.product_id) {
-      const products: Product[] = await fetchAPI(`/products?id=eq.${barcode.product_id}`);
+      const products: Product[] = await fetchAPI(`/products${eq({ id: barcode.product_id })}`);
       product = products?.[0] ?? null;
     }
   } catch {

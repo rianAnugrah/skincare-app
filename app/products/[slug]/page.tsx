@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { fetchAPI, Product } from "@/lib/api";
+import { fetchAPI, eq, Product } from "@/lib/api";
 import StatusBadge from "@/components/StatusBadge";
 
 interface Props {
@@ -14,7 +14,7 @@ export default async function ProductDetailPage({ params }: Props) {
   let error = false;
 
   try {
-    const products: Product[] = await fetchAPI(`/products?slug=eq.${encodeURIComponent(slug)}`);
+    const products: Product[] = await fetchAPI(`/products${eq({ slug })}`);
     product = products?.[0] ?? null;
   } catch {
     error = true;

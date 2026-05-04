@@ -30,6 +30,12 @@ export default function RootLayout({
               Products
             </Link>
             <Link
+              href="/scan"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+            >
+              Scan
+            </Link>
+            <Link
               href="/dashboard"
               className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
