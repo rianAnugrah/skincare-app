@@ -14,7 +14,6 @@ export default function QRScanner() {
 
   const [state, setState] = useState<ScanState>("ready");
   const [errorMsg, setErrorMsg] = useState("");
-  const [manualCode, setManualCode] = useState("");
 
   useEffect(() => {
     return () => {
@@ -85,12 +84,6 @@ export default function QRScanner() {
     }
 
     rafRef.current = requestAnimationFrame(tick);
-  }
-
-  function handleManualSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const code = manualCode.trim();
-    if (code) router.push(`/verify/${encodeURIComponent(code)}`);
   }
 
   return (
@@ -168,12 +161,14 @@ export default function QRScanner() {
         <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
           Enter code manually
         </p>
-        <form onSubmit={handleManualSubmit} className="flex gap-2">
+        <form action="/api/verify" method="get" className="flex gap-2">
           <input
             type="text"
-            value={manualCode}
-            onChange={(e) => setManualCode(e.target.value)}
+            name="code"
             placeholder="e.g. FFY-SERUM-001"
+            required
+            autoComplete="off"
+            autoCapitalize="characters"
             className="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent font-mono"
           />
           <button
