@@ -57,6 +57,42 @@ export async function fetchAPI(path: string, token?: string) {
   return records;
 }
 
+export async function postAPI(path: string, body: Record<string, unknown>, token?: string) {
+  const url = `${BASE_URL}${path}`;
+  const start = Date.now();
+
+  logger.info("api_post_request", { url, path, auth: token ? "user" : "env" });
+
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(token),
+      },
+      body: JSON.stringify(body),
+    });
+  } catch (err) {
+    const durationMs = Date.now() - start;
+    logger.error("api_network_error", { url, durationMs, error: err instanceof Error ? err.message : String(err) });
+    throw err;
+  }
+
+  const durationMs = Date.now() - start;
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    logger.error("api_post_error", { url, status: res.status, statusText: res.statusText, durationMs, body: body.slice(0, 500) });
+    throw new Error(`API Error: ${res.status} ${res.statusText}`);
+  }
+
+  logger.info("api_post_ok", { url, status: res.status, durationMs });
+
+  return res.status === 204 ? null : res.json().catch(() => null);
+}
+
 export async function patchAPI(path: string, body: Record<string, unknown>, token?: string) {
   const url = `${BASE_URL}${path}`;
   const start = Date.now();

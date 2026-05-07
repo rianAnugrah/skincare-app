@@ -28,14 +28,22 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-sm text-gray-500 mt-0.5">{products.length} products</p>
         </div>
-        <form action={logoutAction}>
-          <button
-            type="submit"
-            className="text-sm text-gray-500 hover:text-gray-900 border border-gray-200 rounded-xl px-4 py-2 transition-colors"
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard/products/new"
+            className="text-sm font-medium bg-gray-900 text-white rounded-xl px-4 py-2 hover:bg-gray-700 transition-colors"
           >
-            Sign out
-          </button>
-        </form>
+            + Add product
+          </Link>
+          <form action={logoutAction}>
+            <button
+              type="submit"
+              className="text-sm text-gray-500 hover:text-gray-900 border border-gray-200 rounded-xl px-4 py-2 transition-colors"
+            >
+              Sign out
+            </button>
+          </form>
+        </div>
       </div>
 
       {error && (

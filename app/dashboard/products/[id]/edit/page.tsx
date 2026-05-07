@@ -5,6 +5,7 @@ import QRCode from "qrcode";
 import { fetchAPI, eq, Product, Barcode } from "@/lib/api";
 import StatusBadge from "@/components/StatusBadge";
 import EditForm from "./EditForm";
+import AddBarcodeForm from "./AddBarcodeForm";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -62,10 +63,17 @@ export default async function EditProductPage({ params }: Props) {
 
       {/* QR codes — server-rendered SVGs, no client JS */}
       <div className="space-y-3">
-        <h2 className="text-sm font-semibold text-gray-700">
-          Barcodes & QR Codes
-          <span className="ml-2 text-gray-400 font-normal">({barcodes.length})</span>
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-gray-700">
+            Barcodes & QR Codes
+            <span className="ml-2 text-gray-400 font-normal">({barcodes.length})</span>
+          </h2>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <p className="text-xs font-medium text-gray-500 mb-3">Generate new QR code</p>
+          <AddBarcodeForm productId={product.id} />
+        </div>
 
         {qrEntries.length === 0 && (
           <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center text-gray-400 text-sm">
